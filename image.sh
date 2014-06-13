@@ -61,6 +61,7 @@ for q in 10 20 30 40 50 60 70 80 90
 do
 	convert -strip -quality $q $SRC.pro $SRC.$q.jpg
 	cwebp -quiet -q $q $SRC.png -o $SRC.$q.webp
+	compare -metric PSNR $SRC.pro $SRC.$q.jpg $SRC.$q.diff
 done
 
 echo "<h1>Lossy Transforms</h1>"
@@ -104,13 +105,39 @@ echo "<th scope="col">10</th> <th scope="col">20</th> <th scope="col">30</th> <t
 	echo "</tr>"
 
 	echo "<tr>"
-	echo "<td>WEB</td>"
+	echo "<td>WEBP</td>"
 	for q in 10 20 30 40 50 60 70 80 90 
 	do
 		echo "<td>$(stat -c %s $SRC.$q.webp)</td>"
 	done
 	echo "</tr>"
 echo "</table>";
+
+echo "<h2>PSNR</h2>"
+echo "<table class="tftable" border="1">"
+echo "<tr>"
+echo "<td></td>"
+echo "<th scope="col">10</th> <th scope="col">20</th> <th scope="col">30</th> <th scope="col">40</th> <th scope="col">50</th> <th scope="col">60</th> <th scope="col">70</th> <th scope="col">80</th> <th scope="col">90</th>"
+	echo "<tr>"
+	echo "<td>JPG</td>"
+	for q in 10 20 30 40 50 60 70 80 90 
+	do
+		 echo "<td>$(compare -metric PSNR $SRC.pro $SRC.$q.jpg $SRC.$q.jdiff 2>&1)</td>"
+	done
+	echo "</tr>"
+
+	echo "<tr>"
+	echo "<td>Diff</td>"
+	for q in 10 20 30 40 50 60 70 80 90 
+	do
+	echo '<td><img src="data:image/jpeg;base64,';
+		echo "$(cat $SRC.$q.jdiff| base64)"
+	echo '"></td>';
+	done
+	echo "</tr>"
+
+echo "</table>";
+
 
 
 # get the gory details
