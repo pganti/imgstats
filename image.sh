@@ -56,29 +56,64 @@ echo '<img src="data:image/webp;base64,';
 echo '"><tr>';
 echo "</table>";
 
-echo "<h1>Lossy Transforms</h1>"
-echo "<table class="tftable" border="1">"
-echo "<tr><th> Flavor</th><th> ByteCount</th><th> Image</th></tr>"
 # for a list of quality values generate different files
-for q in 25 40 50 60 70 80 90
+for q in 10 20 30 40 50 60 70 80 90 
 do
 	convert -strip -quality $q $SRC.pro $SRC.$q.jpg
 	cwebp -quiet -q $q $SRC.png -o $SRC.$q.webp
+done
+
+echo "<h1>Lossy Transforms</h1>"
+echo "<h2>Visual Compare of jpg vs webp</h2>"
+echo "<table class="tftable" border="1">"
+echo "<tr>"
+echo "<td></td>"
+echo "<th scope="col">10</th> <th scope="col">20</th> <th scope="col">30</th> <th scope="col">40</th> <th scope="col">50</th> <th scope="col">60</th> <th scope="col">70</th> <th scope="col">80</th> <th scope="col">90</th>"
 	echo "<tr>"
-	echo "<td>JPG at $q%</td>"
-	echo "<td>$(stat -c %s $SRC.$q.jpg)<td>"
-	echo '<img src="data:image/jpeg;base64,';
+	echo "<td>JPG</td>"
+	for q in 10 20 30 40 50 60 70 80 90 
+	do
+	echo '<td><img src="data:image/jpeg;base64,';
 		echo "$(cat $SRC.$q.jpg| base64)"
-	echo '"><tr>';
+	echo '"></td>';
+	done
+	echo "</tr>"
 
 	echo "<tr>"
-	echo "<td>WebP at $q%</td>"
-	echo "<td>$(stat -c %s $SRC.$q.webp)<td>"
-	echo '<img src="data:image/webp;base64,';
+	echo "<td>WEB</td>"
+	for q in 10 20 30 40 50 60 70 80 90 
+	do
+	echo '<td><img src="data:image/webp;base64,';
 		echo "$(cat $SRC.$q.webp| base64)"
-	echo '"><tr>';
-done
+	echo '"></td>';
+	done
+	echo "</tr>"
 echo "</table>";
+
+echo "<h2>Compare ByteSizes of jpg vs webp</h2>"
+echo "<table class="tftable" border="1">"
+echo "<tr>"
+echo "<td></td>"
+echo "<th scope="col">10</th> <th scope="col">20</th> <th scope="col">30</th> <th scope="col">40</th> <th scope="col">50</th> <th scope="col">60</th> <th scope="col">70</th> <th scope="col">80</th> <th scope="col">90</th>"
+	echo "<tr>"
+	echo "<td>JPG</td>"
+	for q in 10 20 30 40 50 60 70 80 90 
+	do
+		 echo "<td>$(stat -c %s $SRC.$q.jpg)</td>"
+	done
+	echo "</tr>"
+
+	echo "<tr>"
+	echo "<td>WEB</td>"
+	for q in 10 20 30 40 50 60 70 80 90 
+	do
+		echo "<td>$(stat -c %s $SRC.$q.webp)</td>"
+	done
+	echo "</tr>"
+echo "</table>";
+
+
 # get the gory details
+echo "<h1>Diagnostic Info</h1>"
 identify -verbose /tmp/$UUID.jpg
 rm /tmp/$UUID*
